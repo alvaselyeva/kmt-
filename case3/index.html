@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кейс: Опоздания</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 750px;
+            margin: 20px auto;
+            padding: 25px;
+            background: #f6f6f6;
+        }
+        .scene {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-top: 4px solid #fc3844;
+        }
+        .scene p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #27262a;
+            margin-bottom: 20px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 14px 18px;
+            text-align: left;
+            background: #ffffff;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            color: #27262a;
+        }
+        button:hover {
+            background: #f6f6f6;
+            border-color: #fc3844;
+        }
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #444444;
+            font-size: 14px;
+        }
+        .feedback.good {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .feedback.bad {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .feedback strong {
+            color: #27262a;
+        }
+    </style>
+</head>
+<body>
+<div id="content"></div>
+
+<script>
+var sceneData = {
+    start: {
+        question: "Занятие идёт 10 минут. Дверь открывается, и студент Максим молча заходит в аудиторию. Это уже третье опоздание за две недели. Группа отвлеклась. Ваши действия?",
+        options: [
+            { text: "Жёстко: «Опять опоздал? Иди к заведующему, без него не возвращайся»", next: "hard" },
+            { text: "Спокойно: «Максим, проходи. После пары подойди ко мне, обсудим»", next: "calm" },
+            { text: "Ничего не сказать. Пусть садится. Продолжить занятие", next: "ignore" }
+        ]
+    },
+    hard: {
+        feedback: "<strong>Это провальный итог.</strong><br><br>Максим пожимает плечами: «Ну и ладно». Он уходит, но на следующее занятие снова опаздывает. Группа начинает шептаться: «Чего он к нему прицепился?». Ваш авторитет подрывается.<br><br>Итог: публичное наказание без выяснения причин часто вызывает у студента обиду и желание бунтовать дальше.<br><br>Совет: начните с вопроса о причинах, прежде чем применять санкции.",
+        type: "bad",
+        end: true
+    },
+    calm: {
+        question: "Максим кивает, садится. После пары он подходит к вашему столу. Вид уставший, но не агрессивный. Ваши действия?",
+        options: [
+            { text: "Спросить без давления: «Максим, я заметил, что ты часто опаздываешь. Что-то случилось?»", next: "calm_ask" },
+            { text: "Предупредить: «Ещё одно опоздание — и я буду вынужден написать докладную»", next: "calm_warn" },
+            { text: "Дать совет: «Давай договоримся: приходишь на 5 минут раньше, я помогу разобраться с пропущенным»", next: "calm_deal" }
+        ]
+    },
+    calm_ask: {
+        feedback: "<strong>Это конструктивный итог.</strong><br><br>Максим мнётся: «Да я просто живу далеко, электрички часто опаздывают…». Вы видите, что причина уважительная. Вы договариваетесь, что он будет заходить тихо, а пропущенное изучит самостоятельно.<br><br>Итог: вы проявили эмпатию, но границу всё равно обозначили. Студент чувствует, что его слышат, и больше не проверяет вас.<br><br>Педагогический приём: активное слушание и индивидуальный подход.",
+        type: "good",
+        end: true
+    },
+    calm_warn: {
+        feedback: "<strong>Это неоднозначный итог.</strong><br><br>Максим кивает, но выглядит подавленным. На следующей неделе он действительно не опаздывает, но на занятиях стал пассивным, отвечает нехотя.<br><br>Итог: угроза сработала, но ценой потери контакта. Студент подчинился, но не доверяет вам.<br><br>Совет: старайтесь сочетать требовательность с вниманием к личности студента.",
+        type: "bad",
+        end: true
+    },
+    calm_deal: {
+        feedback: "<strong>Это конструктивный итог.</strong><br><br>Максим улыбается: «А давайте!». Вы действительно помогаете ему нагнать пропущенное на перемене. Он начинает приходить вовремя, видно, что ему стало не всё равно.<br><br>Итог: вы предложили конкретную помощь, а не просто наказание. Это мотивирует студента менять поведение.<br><br>Педагогический приём: договор и позитивное подкрепление.",
+        type: "good",
+        end: true
+    },
+    ignore: {
+        feedback: "<strong>Это провальный итог.</strong><br><br>Максим садится, вы ничего не говорите. Через неделю опаздывать начинают ещё двое студентов. Они видят, что последствий нет. Ваше молчание воспринято как разрешение.<br><br>Итог: игнорирование систематических опозданий размывает границы и подрывает дисциплину во всей группе.<br><br>Совет: реагировать нужно обязательно, даже если вы выбираете мягкий подход.",
+        type: "bad",
+        end: true
+    }
+};
+
+function showScene(id) {
+    var scene = sceneData[id];
+    var html = '<div class="scene">';
+    if (scene.question) {
+        html += '<p>' + scene.question.replace(/\n/g, '<br>') + '</p>';
+        scene.options.forEach(function(opt) {
+            html += '<button onclick="showScene(\'' + opt.next + '\')">' + opt.text + '</button>';
+        });
+    } else if (scene.feedback) {
+        html += '<div class="feedback ' + (scene.type || '') + '">' + scene.feedback + '</div>';
+        html += '<p style="margin-top: 20px;">Вы увидели один из вариантов развития событий. Вернитесь и попробуйте другую тактику.</p>';
+        html += '<button onclick="showScene(\'start\')">Пройти заново</button>';
+    }
+    html += '</div>';
+    document.getElementById('content').innerHTML = html;
+}
+
+window.onload = function() {
+    showScene('start');
+};
+</script>
+</body>
+</html>
