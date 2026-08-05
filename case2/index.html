@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кейс: Хамство и проверка границ</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 750px;
+            margin: 20px auto;
+            padding: 25px;
+            background: #f6f6f6;
+        }
+        .scene {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-top: 4px solid #fc3844;
+        }
+        .scene p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #27262a;
+            margin-bottom: 20px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 14px 18px;
+            text-align: left;
+            background: #ffffff;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            color: #27262a;
+        }
+        button:hover {
+            background: #f6f6f6;
+            border-color: #fc3844;
+        }
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #444444;
+            font-size: 14px;
+        }
+        .feedback.good {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .feedback.bad {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .feedback strong {
+            color: #27262a;
+        }
+    </style>
+</head>
+<body>
+<div id="content"></div>
+
+<script>
+var sceneData = {
+    start: {
+        question: "Вы объясняете новую тему. Студент Кирилл громко, на всю аудиторию, заявляет: «Скучно! Когда уже закончится эта тягомотина?». Группа замерла и ждёт вашей реакции. Ваши действия?",
+        options: [
+            { text: "Жёстко ответить: «Выйди из кабинета и без родителей не возвращайся»", next: "hard" },
+            { text: "Спокойно ответить: «Кирилл, мне жаль, что тебе скучно. Давай обсудим это после пары, а сейчас продолжим занятие»", next: "calm" },
+            { text: "Сделать вид, что не услышали, и продолжить объяснение", next: "ignore" }
+        ]
+    },
+    hard: {
+        feedback: "<strong>Это провальный итог.</strong><br><br>Кирилл усмехается: «Да пожалуйста!» — хлопает дверью и уходит. Несколько студентов переглядываются с одобрением. Вы потеряли контроль над ситуацией, а Кирилл стал героем в глазах группы.<br><br>Итог: публичное жёсткое наказание часто провоцирует эскалацию. Студент сохраняет лицо перед группой, а вы теряете авторитет.<br><br>Совет: не вступайте в открытую конфронтацию при всех. Отложите разговор на потом.",
+        type: "bad",
+        end: true
+    },
+    calm: {
+        question: "Кирилл не унимается: «А чего после пары? Давайте сейчас обсудим! Мне реально непонятно, зачем мы это учим». Он явно хочет продолжить шоу. Ваши действия?",
+        options: [
+            { text: "Твёрдо: «Кирилл, я услышал тебя. После пары — в любое время. Сейчас мы идём по плану»", next: "calm_firm" },
+            { text: "Попробовать перевести в шутку: «Ну, Кирилл, не всё же коту масленица!»", next: "calm_joke" },
+            { text: "Согласиться на обсуждение при всех, но ограничить время: «Хорошо, у нас ровно 5 минут, чтобы обсудить, и мы возвращаемся к теме»", next: "calm_discuss" }
+        ]
+    },
+    calm_firm: {
+        feedback: "<strong>Это конструктивный итог.</strong><br><br>Кирилл видит, что вы не прогибаетесь, но и не срываетесь. Он что-то бурчит себе под нос, но затихает. После пары он не подходит — но на следующем занятии ведёт себя заметно спокойнее.<br><br>Итог: вы показали, что уважаете его мнение, но не позволяете срывать урок. Граница обозначена чётко и без агрессии.<br><br>Педагогический приём: технология «отложенной реакции» и сохранение учебного времени.",
+        type: "good",
+        end: true
+    },
+    calm_joke: {
+        feedback: "<strong>Это рискованный итог.</strong><br><br>Половина группы смеётся, Кирилл воспринимает шутку как поощрение и продолжает: «О, у нас тут юморист!». Вы вынуждены снова реагировать. Урок сбился, но открытого конфликта нет.<br><br>Итог: юмор может разрядить обстановку, но с демонстративными студентами часто работает как подкрепление. Они получают внимание, ради которого и затевали провокацию.<br><br>Совет: шутите, только если уверены, что студент не воспримет это как слабость.",
+        type: "bad",
+        end: true
+    },
+    calm_discuss: {
+        feedback: "<strong>Это неоднозначный итог.</strong><br><br>Вы дали слово Кириллу. Он высказался, но дискуссия затянулась, и вы не успели выдать запланированный материал. Группа вроде довольна, но план урока сорван.<br><br>Итог: демократичный подход полезен, но требует жёсткого тайм-менеджмента. Если не уложиться в лимит — урок потерян.<br><br>Совет: если решили обсуждать, ставьте таймер на виду у всех и держите слово.",
+        type: "bad",
+        end: true
+    },
+    ignore: {
+        feedback: "<strong>Это провальный итог.</strong><br><br>Вы продолжаете объяснение как ни в чём не бывало. Кирилл переглядывается с друзьями, те хихикают. Через 5 минут он снова подаёт реплику, ещё громче. Вы теряете нить урока, группа отвлекается.<br><br>Итог: игнорирование открытой провокации воспринимается как слабость. Студент не остановится, пока не добьётся реакции.<br><br>Совет: реагировать нужно обязательно, но не так, как он ожидает.",
+        type: "bad",
+        end: true
+    }
+};
+
+function showScene(id) {
+    var scene = sceneData[id];
+    var html = '<div class="scene">';
+    if (scene.question) {
+        html += '<p>' + scene.question.replace(/\n/g, '<br>') + '</p>';
+        scene.options.forEach(function(opt) {
+            html += '<button onclick="showScene(\'' + opt.next + '\')">' + opt.text + '</button>';
+        });
+    } else if (scene.feedback) {
+        html += '<div class="feedback ' + (scene.type || '') + '">' + scene.feedback + '</div>';
+        html += '<p style="margin-top: 20px;">Вы увидели один из вариантов развития событий. Вернитесь и попробуйте другую тактику.</p>';
+        html += '<button onclick="showScene(\'start\')">Пройти заново</button>';
+    }
+    html += '</div>';
+    document.getElementById('content').innerHTML = html;
+}
+
+window.onload = function() {
+    showScene('start');
+};
+</script>
+</body>
+</html>
