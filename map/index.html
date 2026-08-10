@@ -17,8 +17,8 @@
         }
         .map-container {
             position: relative;
-            width: 90%;
-            max-width: 900px;
+            width: 900px;
+            max-width: 100%;
         }
         .map-container img {
             width: 100%;
@@ -26,24 +26,39 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .map-marker {
+        .marker-group {
             position: absolute;
-            width: 24px;
-            height: 24px;
+            cursor: pointer;
+            transform: translate(-50%, -100%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .marker-label {
+            background: #fc3844;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            margin-bottom: 2px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .marker-dot {
+            width: 16px;
+            height: 16px;
             background: #fc3844;
             border: 3px solid white;
             border-radius: 50%;
-            cursor: pointer;
-            transform: translate(-50%, -50%);
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            z-index: 10;
+            transition: transform 0.2s;
         }
-        .map-marker:hover {
-            transform: translate(-50%, -50%) scale(1.3);
-            box-shadow: 0 4px 14px rgba(252,56,68,0.6);
+        .marker-group:hover .marker-dot {
+            transform: scale(1.3);
         }
-        .map-marker::after {
+        .marker-dot::after {
             content: '';
             position: absolute;
             top: -6px;
@@ -131,11 +146,22 @@
 </head>
 <body>
     <div class="map-container">
-        <img src="https://raw.githubusercontent.com/alvaselyeva/kmt-/main/Снимок%20экрана%202026-08-05%20в%2011.46.49.png" alt="Карта площадок КМТ">
-        <!-- Точки площадок (координаты в % относительно картинки) -->
-        <div class="map-marker" style="left: 52%; top: 42%;" data-op="1"></div>
-        <div class="map-marker" style="left: 30%; top: 28%;" data-op="2"></div>
-        <div class="map-marker" style="left: 74%; top: 55%;" data-op="3"></div>
+        <img src="https://raw.githubusercontent.com/alvaselyeva/kmt-/main/%D0%A1%D0%BD%D0%B8%D0%BC%D0%BE%D0%BA%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%202026-08-05%20%D0%B2%2011.46.49.png" alt="Карта площадок КМТ">
+        <!-- 1ОП -->
+        <div class="marker-group" style="left: 44.88%; top: 52.22%;" data-op="1">
+            <div class="marker-label">1ОП</div>
+            <div class="marker-dot"></div>
+        </div>
+        <!-- 2ОП -->
+        <div class="marker-group" style="left: 11.14%; top: 10.71%;" data-op="2">
+            <div class="marker-label">2ОП</div>
+            <div class="marker-dot"></div>
+        </div>
+        <!-- 3ОП -->
+        <div class="marker-group" style="left: 88.82%; top: 67.79%;" data-op="3">
+            <div class="marker-label">3ОП</div>
+            <div class="marker-dot"></div>
+        </div>
     </div>
 
     <!-- Модальное окно -->
@@ -173,7 +199,8 @@
                 address: 'Адрес: Напольный проезд, д. 7.<br>Метро: Новогиреево.',
                 photos: [
                     'https://avatars.mds.yandex.net/get-altay/19636095/2a0000019d01887d7748b3022123dc4b0069/XXXL',
-                    'https://avatars.mds.yandex.net/get-altay/176734/2a0000018635b93224e15eaadd027629595b/XXXL'
+                    'https://avatars.mds.yandex.net/get-altay/176734/2a0000018635b93224e15eaadd027629595b/XXXL',
+                    'https://avatars.mds.yandex.net/get-altay/1363376/2a0000018635b9219b9df1d5acb82a2b1659/XXXL'
                 ]
             }
         };
@@ -183,9 +210,9 @@
         const modalAddress = document.getElementById('modalAddress');
         const modalPhotos = document.getElementById('modalPhotos');
 
-        document.querySelectorAll('.map-marker').forEach(marker => {
-            marker.addEventListener('click', () => {
-                const op = marker.dataset.op;
+        document.querySelectorAll('.marker-group').forEach(group => {
+            group.addEventListener('click', () => {
+                const op = group.dataset.op;
                 const info = data[op];
                 modalTitle.textContent = info.title;
                 modalAddress.innerHTML = info.address;
