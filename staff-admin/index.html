@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администрация колледжа</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f6f6f6;
+            margin: 0;
+            padding: 20px;
+        }
+        .director-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .deputies-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            width: 200px;
+            text-align: center;
+            padding: 20px 15px;
+            border-top: 4px solid #fc3844;
+        }
+        .card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            background: #e0e0e0;
+        }
+        .name {
+            font-weight: 600;
+            color: #27262a;
+            margin-bottom: 5px;
+        }
+        .position {
+            font-size: 14px;
+            color: #444444;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Директор (отдельная строка) -->
+    <div class="director-row">
+        <div class="card">
+            <img src="https://api-app.mskobr.ru/api/v5/foto/14555/photo_user.jpg" alt="Печеная А.С.">
+            <div class="name">Печеная Анна Сергеевна</div>
+            <div class="position">Директор колледжа</div>
+        </div>
+    </div>
+    <!-- Заместители (строка) -->
+    <div class="deputies-row">
+        <div class="card">
+            <img src="https://kmt.mskobr.ru/attach_files/photo_new/photo_df6b19652ec500b738644a29c894a876_68d8e0918ab0a.jpeg" alt="Колывагин В.Б.">
+            <div class="name">Колывагин Виталий Борисович</div>
+            <div class="position">Первый заместитель директора</div>
+        </div>
+        <div class="card">
+            <img src="https://kmt.mskobr.ru/attach_files/photo_new/photo_890a4d88ba87d7e36297692c05050c8f_68f12f909717b.jpeg" alt="Поливечко А.С.">
+            <div class="name">Поливечко Антон Сергеевич</div>
+            <div class="position">Заместитель директора<br>по учебно-производственной работе</div>
+        </div>
+        <div class="card">
+            <img src="https://kmt.mskobr.ru/attach_files/photo_new/photo_5853d15eb6675c6402bc3791c042b04b_68d8e0ab003b4.jpeg" alt="Ухина С.В.">
+            <div class="name">Ухина Светлана Владимировна</div>
+            <div class="position">Заместитель директора<br>по содержанию образования</div>
+        </div>
+        <div class="card">
+            <img src="https://kmt.mskobr.ru/attach_files/photo_new/photo_366cb000d57ac85aae4cab6a2e3ceabb_693ef5a85949b.jpeg" alt="Макарова О.А.">
+            <div class="name">Макарова Оксана Александровна</div>
+            <div class="position">Заместитель директора<br>по воспитанию и социализации</div>
+        </div>
+    </div>
+</body>
+</html>
