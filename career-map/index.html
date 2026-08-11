@@ -16,7 +16,7 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 900px;
+            max-width: 700px;
             width: 100%;
             background: white;
             border-radius: 16px;
@@ -32,64 +32,11 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        .scene {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            position: relative;
-        }
-        .person {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            width: 80px;
-            position: relative;
-            z-index: 5;
-        }
-        .head {
-            width: 24px;
-            height: 24px;
-            background: #27262a;
-            border-radius: 50%;
-            margin-bottom: -2px;
-        }
-        .body {
-            width: 6px;
-            height: 60px;
-            background: #27262a;
-            border-radius: 3px;
-            position: relative;
-        }
-        .arms {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 4px;
-            background: #27262a;
-            border-radius: 2px;
-        }
-        .legs {
-            display: flex;
-            gap: 4px;
-            margin-top: -2px;
-        }
-        .leg {
-            width: 4px;
-            height: 30px;
-            background: #27262a;
-            border-radius: 2px;
-        }
         .stairs {
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 0;
-            position: relative;
-            z-index: 2;
         }
         .step {
             height: 60px;
@@ -121,7 +68,6 @@
         .step4 { width: 220px; }
         .step5 { width: 200px; }
 
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -180,16 +126,6 @@
             margin-bottom: 5px;
         }
         @media (max-width: 600px) {
-            .scene {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-            }
-            .stairs {
-                flex-direction: column;
-                gap: 10px;
-                align-items: center;
-            }
             .step {
                 width: 240px !important;
                 font-size: 14px;
@@ -200,30 +136,15 @@
 <body>
     <div class="container">
         <h2>Куда расти дальше</h2>
-        <div class="scene">
-            <!-- Человечек -->
-            <div class="person">
-                <div class="head"></div>
-                <div class="body">
-                    <div class="arms"></div>
-                </div>
-                <div class="legs">
-                    <div class="leg"></div>
-                    <div class="leg"></div>
-                </div>
-            </div>
-            <!-- Лестница -->
-            <div class="stairs">
-                <div class="step step5" data-detail="contest">Конкурсы профмастерства</div>
-                <div class="step step4" data-detail="mes">Сценарирование МЭШ</div>
-                <div class="step step3" data-detail="pck">Работа в ПЦК</div>
-                <div class="step step2" data-detail="mentor">Кураторство</div>
-                <div class="step step1" data-detail="courses">Повышение квалификации</div>
-            </div>
+        <div class="stairs">
+            <div class="step step5" data-detail="contest">Конкурсы профмастерства</div>
+            <div class="step step4" data-detail="mes">Сценарирование МЭШ</div>
+            <div class="step step3" data-detail="pck">Работа в ПЦК</div>
+            <div class="step step2" data-detail="mentor">Кураторство</div>
+            <div class="step step1" data-detail="courses">Повышение квалификации</div>
         </div>
     </div>
 
-    <!-- Модальное окно -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
