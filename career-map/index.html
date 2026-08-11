@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Куда расти дальше</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f6f6f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-top: 5px solid #fc3844;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #27262a;
+            margin-top: 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .scene {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .person {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 80px;
+            position: relative;
+            z-index: 5;
+        }
+        .head {
+            width: 24px;
+            height: 24px;
+            background: #27262a;
+            border-radius: 50%;
+            margin-bottom: -2px;
+        }
+        .body {
+            width: 6px;
+            height: 60px;
+            background: #27262a;
+            border-radius: 3px;
+            position: relative;
+        }
+        .arms {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: #27262a;
+            border-radius: 2px;
+        }
+        .legs {
+            display: flex;
+            gap: 4px;
+            margin-top: -2px;
+        }
+        .leg {
+            width: 4px;
+            height: 30px;
+            background: #27262a;
+            border-radius: 2px;
+        }
+        .stairs {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+            z-index: 2;
+        }
+        .step {
+            height: 60px;
+            background: white;
+            border: 2px solid #fc3844;
+            border-radius: 8px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 15px;
+            color: #27262a;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            text-align: center;
+            white-space: nowrap;
+        }
+        .step:hover {
+            background: #fc3844;
+            color: white;
+            box-shadow: 0 4px 12px rgba(252,56,68,0.3);
+            transform: translateY(-2px);
+        }
+        .step1 { width: 280px; }
+        .step2 { width: 260px; }
+        .step3 { width: 240px; }
+        .step4 { width: 220px; }
+        .step5 { width: 200px; }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            border-top: 5px solid #fc3844;
+            animation: fadeIn 0.3s ease;
+            text-align: left;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 28px;
+            color: #888;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: color 0.2s;
+        }
+        .modal-close:hover { color: #fc3844; }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #27262a;
+            margin-bottom: 15px;
+        }
+        .modal-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #444;
+        }
+        .modal-text ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        .modal-text li {
+            margin-bottom: 5px;
+        }
+        @media (max-width: 600px) {
+            .scene {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            .stairs {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+            .step {
+                width: 240px !important;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Куда расти дальше</h2>
+        <div class="scene">
+            <!-- Человечек -->
+            <div class="person">
+                <div class="head"></div>
+                <div class="body">
+                    <div class="arms"></div>
+                </div>
+                <div class="legs">
+                    <div class="leg"></div>
+                    <div class="leg"></div>
+                </div>
+            </div>
+            <!-- Лестница -->
+            <div class="stairs">
+                <div class="step step5" data-detail="contest">Конкурсы профмастерства</div>
+                <div class="step step4" data-detail="mes">Сценарирование МЭШ</div>
+                <div class="step step3" data-detail="pck">Работа в ПЦК</div>
+                <div class="step step2" data-detail="mentor">Кураторство</div>
+                <div class="step step1" data-detail="courses">Повышение квалификации</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-text" id="modalText"></div>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            contest: {
+                title: "Конкурсы профмастерства",
+                text: `<p>Участие в конкурсах — это не только признание коллег и строчка в портфолио, но и мощный толчок для профессионального роста. Вы можете попробовать свои силы на разных уровнях:</p>
+                <ul>
+                    <li><b>«Профессионалы»</b> — чемпионатное движение, где вы можете быть и наставником, и экспертом.</li>
+                    <li><b>«Мастер года»</b> — всероссийский конкурс для мастеров и преподавателей системы СПО.</li>
+                    <li><b>«Педагогический дебют»</b> — конкурс специально для молодых педагогов Москвы, где вы сможете заявить о себе.</li>
+                    <li><b>Отраслевые конкурсы</b> — следите за объявлениями, которые рассылает методическая служба колледжа.</li>
+                </ul>
+                <p>Это не страшно, а очень полезно. Каждый конкурс — это возможность выйти за рамки кабинета и увидеть, как работают лучшие.</p>`
+            },
+            mes: {
+                title: "Сценарирование МЭШ",
+                text: `<p>Вы можете не просто использовать готовые сценарии, но и создавать свои. Это творческая, хорошо оплачиваемая работа, результаты которой увидят тысячи студентов по всему городу.</p>
+                <p>Чтобы начать, обратитесь к методисту вашей площадки или старшему методисту Алфёровой И.А. Вам помогут разобраться с техническими требованиями и включиться в этот проект. Это ценный опыт и отличная строчка в вашем профессиональном портфолио.</p>`
+            },
+            pck: {
+                title: "Работа в ПЦК",
+                text: `<p>Предметно-цикловая комиссия — это ваше профессиональное сообщество внутри колледжа. Здесь вы можете:</p>
+                <ul>
+                    <li>Выступать с докладами и делиться своими наработками.</li>
+                    <li>Участвовать в обсуждении и корректировке учебных программ.</li>
+                    <li>Найти наставника или стать им для нового коллеги.</li>
+                </ul>
+                <p>Активное участие в ПЦК — это прямой путь к уважению коллег и быстрому методическому росту. Не стесняйтесь предлагать свои идеи.</p>`
+            },
+            mentor: {
+                title: "Кураторство и наставничество",
+                text: `<p>Стать куратором учебной группы — это ответственно, но очень интересно. Вы будете сопровождать студентов, помогать им решать организационные и личные вопросы, стать для них опорой в колледже.</p>
+                <p>Это аналог классного руководства в школе, но в мире СПО. Такая работа дополнительно оплачивается и даёт неоценимый управленческий и психологический опыт. Если вы чувствуете в себе силы — сообщите заведующему отделением о своём желании.</p>`
+            },
+            courses: {
+                title: "Повышение квалификации",
+                text: `<p>Ваш основной ресурс для бесплатного обучения — портал <a href="https://www.dpomos.ru/" target="_blank">ДПО Москвы (dpomos.ru)</a>. Здесь собраны сотни курсов по всем направлениям: от предметных методик до управления стрессом и инклюзивного образования.</p>
+                <p>Повышение квалификации — это не «обязаловка», а возможность оставаться в тонусе и расти как специалист. Курсы можно выбирать под свои интересы и проходить в удобное время.</p>`
+            }
+        };
+
+        const steps = document.querySelectorAll('.step');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalText = document.getElementById('modalText');
+
+        steps.forEach(step => {
+            step.addEventListener('click', () => {
+                const detailId = step.dataset.detail;
+                if (data[detailId]) {
+                    modalTitle.textContent = data[detailId].title;
+                    modalText.innerHTML = data[detailId].text;
+                    modal.classList.add('active');
+                }
+            });
+        });
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    </script>
+</body>
+</html>
