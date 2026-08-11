@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Куда расти дальше</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f6f6f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-top: 5px solid #fc3844;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #27262a;
+            margin-top: 0;
+            text-align: center;
+        }
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .card {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .card:hover {
+            border-color: #fc3844;
+        }
+        .card.active {
+            border-color: #fc3844;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .card-title {
+            font-weight: 600;
+            color: #27262a;
+        }
+        .card-details {
+            display: none;
+            text-align: left;
+            margin-top: 10px;
+            color: #444;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .card.active .card-details {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Куда расти дальше</h2>
+        <div class="map-grid">
+            <!-- Конкурсы -->
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-icon">🏆</div>
+                <div class="card-title">Конкурсы профмастерства</div>
+                <div class="card-details">
+                    Участие в конкурсах — это не только признание коллег и строчка в портфолио, но и мощный толчок для профессионального роста. Вы можете попробовать свои силы на разных уровнях:
+                    <ul>
+                        <li><b>«Профессионалы»</b> — чемпионатное движение, где вы можете быть и наставником, и экспертом.</li>
+                        <li><b>«Мастер года»</b> — всероссийский конкурс для мастеров и преподавателей системы СПО.</li>
+                        <li><b>«Педагогический дебют»</b> — конкурс специально для молодых педагогов Москвы, где вы сможете заявить о себе.</li>
+                        <li><b>Отраслевые конкурсы</b> — следите за объявлениями, которые рассылает методическая служба колледжа.</li>
+                    </ul>
+                    Это не страшно, а очень полезно. Каждый конкурс — это возможность выйти за рамки кабинета и увидеть, как работают лучшие.
+                </div>
+            </div>
+            <!-- Сценарирование МЭШ -->
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-icon">✍️</div>
+                <div class="card-title">Разработчик сценариев МЭШ</div>
+                <div class="card-details">
+                    Вы можете не просто использовать готовые сценарии, но и создавать свои. Это творческая, хорошо оплачиваемая работа, результаты которой увидят тысячи студентов по всему городу.
+                    <br><br>
+                    Чтобы начать, обратитесь к методисту вашей площадки или старшему методисту Алфёровой И.А. Вам помогут разобраться с техническими требованиями и включиться в этот проект. Это ценный опыт и отличная строчка в вашем профессиональном портфолио.
+                </div>
+            </div>
+            <!-- ПЦК -->
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-icon">🤝</div>
+                <div class="card-title">Работа в ПЦК</div>
+                <div class="card-details">
+                    Предметно-цикловая комиссия — это ваше профессиональное сообщество внутри колледжа. Здесь вы можете:
+                    <ul>
+                        <li>Выступать с докладами и делиться своими наработками.</li>
+                        <li>Участвовать в обсуждении и корректировке учебных программ.</li>
+                        <li>Найти наставника или стать им для нового коллеги.</li>
+                    </ul>
+                    Активное участие в ПЦК — это прямой путь к уважению коллег и быстрому методическому росту. Не стесняйтесь предлагать свои идеи.
+                </div>
+            </div>
+            <!-- Наставничество -->
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-icon">🧭</div>
+                <div class="card-title">Кураторство и наставничество</div>
+                <div class="card-details">
+                    Стать куратором учебной группы — это ответственно, но очень интересно. Вы будете сопровождать студентов, помогать им решать организационные и личные вопросы, стать для них опорой в колледже.
+                    <br><br>
+                    Это аналог классного руководства в школе, но в мире СПО. Такая работа дополнительно оплачивается и даёт неоценимый управленческий и психологический опыт. Если вы чувствуете в себе силы — сообщите заведующему отделением о своём желании.
+                </div>
+            </div>
+            <!-- Курсы ДПО -->
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-icon">📚</div>
+                <div class="card-title">Повышение квалификации</div>
+                <div class="card-details">
+                    Ваш основной ресурс для бесплатного обучения — портал <a href="https://www.dpomos.ru/" target="_blank">ДПО Москвы (dpomos.ru)</a>. Здесь собраны сотни курсов по всем направлениям: от предметных методик до управления стрессом и инклюзивного образования.
+                    <br><br>
+                    Повышение квалификации — это не «обязаловка», а возможность оставаться в тонусе и расти как специалист. Курсы можно выбирать под свои интересы и проходить в удобное время.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCard(card) {
+            // Закрываем все остальные
+            document.querySelectorAll('.card').forEach(c => {
+                if (c !== card) c.classList.remove('active');
+            });
+            // Переключаем текущую
+            card.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
