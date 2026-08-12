@@ -30,14 +30,14 @@
             font-weight: 700;
             color: #27262a;
             margin-top: 0;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
         }
         .map {
             position: relative;
             width: 100%;
             height: 0;
             padding-bottom: 70%;
-            margin: 0 auto;
+            margin: 0 auto 15px auto;
             background: #ffffff;
             border-radius: 12px;
             overflow: hidden;
@@ -119,7 +119,7 @@
             opacity: 0.4;
         }
         .detail-panel {
-            margin-top: 10px;
+            margin: 0 0 5px 0;
             padding: 8px 12px;
             background: #f9f9f9;
             border-radius: 8px;
@@ -147,13 +147,13 @@
 <body>
     <div class="container">
         <h2>Многомерная модель: Московский транспорт</h2>
-        <div class="detail-panel" id="detailPanel">
-            Нажмите на любой узел, чтобы увидеть пояснение.
-        </div>
         <div class="map" id="map">
             <div class="map-inner" id="mapInner">
                 <div class="center-node">Московский<br>транспорт</div>
             </div>
+        </div>
+        <div class="detail-panel" id="detailPanel">
+            Нажмите на любой узел, чтобы увидеть пояснение.
         </div>
     </div>
 
@@ -164,7 +164,7 @@
                 {
                     id: "types",
                     label: "Виды транспорта",
-                    angle: -80,
+                    angle: -90,
                     nodes: [
                         { label: "Метрополитен", desc: "Основа городского транспорта Москвы, перевозит миллионы пассажиров ежедневно." },
                         { label: "МЦК", desc: "Московское центральное кольцо, интегрированное с метро и радиальными линиями." },
@@ -186,7 +186,7 @@
                 {
                     id: "specialists",
                     label: "Специалисты",
-                    angle: 20,
+                    angle: 30,
                     nodes: [
                         { label: "Машинисты", desc: "Управляют поездами метро, МЦК и наземным транспортом." },
                         { label: "Диспетчеры", desc: "Координируют движение, обеспечивают безопасность и график." },
@@ -197,7 +197,7 @@
                 {
                     id: "processes",
                     label: "Процессы",
-                    angle: 70,
+                    angle: 90,
                     nodes: [
                         { label: "Перевозки", desc: "Организация пассажирских перевозок, маршруты, расписание." },
                         { label: "Обслуживание", desc: "Техническое обслуживание и плановый ремонт состава." },
@@ -207,9 +207,9 @@
                 {
                     id: "future",
                     label: "Будущее",
-                    angle: 130,
+                    angle: 150,
                     nodes: [
-                        { label: "Беспилотники", desc: "Разработка и внедрение беспилотных поездов." },
+                        { label: "Беспилотные поезда", desc: "Разработка и внедрение беспилотных поездов." },
                         { label: "Цифровизация", desc: "Цифровые двойники инфраструктуры, предиктивная аналитика." },
                         { label: "Экология", desc: "Снижение выбросов, энергоэффективность, зелёные технологии." }
                     ]
@@ -229,15 +229,14 @@
             const cx = w / 2;
             const cy = h / 2;
 
-            // Длинные серые линии — в 1.6 раза больше
-            const axisScale = Math.min(w, h) * 0.72;
-            // Узлы размещаем на 0.55 длины оси (компактнее)
-            const nodeScale = Math.min(w, h) * 0.55;
+            const axisScale = Math.min(w, h) * 0.75;  // длинные серые линии
+            const nodeScale = Math.min(w, h) * 0.6;   // максимальное удаление узлов
+            const minRadius = Math.min(w, h) * 0.2;   // безопасный отступ от центра для первого узла
 
             data.axes.forEach(axis => {
                 const angleRad = (axis.angle - 90) * Math.PI / 180;
 
-                // Конечная точка серой оси (длиннее)
+                // Конечная точка серой оси
                 const axisEndX = cx + Math.cos(angleRad) * axisScale;
                 const axisEndY = cy + Math.sin(angleRad) * axisScale;
 
@@ -251,8 +250,8 @@
                 axisLine.style.transform = `rotate(${Math.atan2(axisEndY - cy, axisEndX - cx)}rad)`;
                 mapInner.appendChild(axisLine);
 
-                // Подпись оси — на конце линии
-                const labelDist = axisScale + 5;
+                // Подпись оси на конце линии
+                const labelDist = axisScale + 8;
                 let labelX = cx + Math.cos(angleRad) * labelDist;
                 let labelY = cy + Math.sin(angleRad) * labelDist;
                 labelX = Math.min(Math.max(labelX, 25), w - 25);
@@ -264,10 +263,11 @@
                 label.style.top = labelY + 'px';
                 mapInner.appendChild(label);
 
-                // Узлы (расстояние между ними меньше, т.к. nodeScale короче)
-                const nodeSpacing = nodeScale / (axis.nodes.length + 1);
-                axis.nodes.forEach((nodeData, index) => {
-                    const dist = nodeSpacing * (index + 1);
+                // Узлы: равномерно от minRadius до nodeScale
+                const totalNodes = axis.nodes.length;
+                const step = (nodeScale - minRadius) / (totalNodes - 1 || 1);
+                for (let i = 0; i < totalNodes; i++) {
+                    const dist = minRadius + step * i;
                     let nodeX = cx + Math.cos(angleRad) * dist;
                     let nodeY = cy + Math.sin(angleRad) * dist;
                     nodeX = Math.min(Math.max(nodeX, 15), w - 15);
@@ -286,15 +286,15 @@
                     // Узел
                     const node = document.createElement('div');
                     node.className = 'node';
-                    node.textContent = nodeData.label;
+                    node.textContent = axis.nodes[i].label;
                     node.style.left = nodeX + 'px';
                     node.style.top = nodeY + 'px';
                     node.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        detailPanel.innerHTML = `<strong>${nodeData.label}</strong><br><br>${nodeData.desc}`;
+                        detailPanel.innerHTML = `<strong>${axis.nodes[i].label}</strong><br><br>${axis.nodes[i].desc}`;
                     });
                     mapInner.appendChild(node);
-                });
+                }
             });
         }
 
