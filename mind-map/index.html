@@ -36,7 +36,7 @@
             position: relative;
             width: 100%;
             height: 0;
-            padding-bottom: 75%;
+            padding-bottom: 70%;
             margin: 0 auto;
             background: #ffffff;
             border-radius: 12px;
@@ -119,7 +119,7 @@
             opacity: 0.4;
         }
         .detail-panel {
-            margin-top: 5px;
+            margin-top: 10px;
             padding: 8px 12px;
             background: #f9f9f9;
             border-radius: 8px;
@@ -147,7 +147,7 @@
 <body>
     <div class="container">
         <h2>Многомерная модель: Московский транспорт</h2>
-        <div class="detail-panel" id="detailPanel" style="margin-bottom: 8px;">
+        <div class="detail-panel" id="detailPanel">
             Нажмите на любой узел, чтобы увидеть пояснение.
         </div>
         <div class="map" id="map">
@@ -229,16 +229,17 @@
             const cx = w / 2;
             const cy = h / 2;
 
-            // Увеличенный масштаб — линии длиннее в 1.5 раза
-            const scale = Math.min(w, h) * 0.6;
+            // Длинные серые линии — в 1.6 раза больше
+            const axisScale = Math.min(w, h) * 0.72;
+            // Узлы размещаем на 0.55 длины оси (компактнее)
+            const nodeScale = Math.min(w, h) * 0.55;
 
             data.axes.forEach(axis => {
                 const angleRad = (axis.angle - 90) * Math.PI / 180;
-                const lastNodeDist = 0.7 * scale;
 
-                // Конечная точка оси
-                const axisEndX = cx + Math.cos(angleRad) * lastNodeDist;
-                const axisEndY = cy + Math.sin(angleRad) * lastNodeDist;
+                // Конечная точка серой оси (длиннее)
+                const axisEndX = cx + Math.cos(angleRad) * axisScale;
+                const axisEndY = cy + Math.sin(angleRad) * axisScale;
 
                 // Ось
                 const axisLine = document.createElement('div');
@@ -250,8 +251,8 @@
                 axisLine.style.transform = `rotate(${Math.atan2(axisEndY - cy, axisEndX - cx)}rad)`;
                 mapInner.appendChild(axisLine);
 
-                // Подпись оси — размещаем точно на линии, чуть дальше последнего узла
-                const labelDist = lastNodeDist + 10;
+                // Подпись оси — на конце линии
+                const labelDist = axisScale + 5;
                 let labelX = cx + Math.cos(angleRad) * labelDist;
                 let labelY = cy + Math.sin(angleRad) * labelDist;
                 labelX = Math.min(Math.max(labelX, 25), w - 25);
@@ -263,8 +264,8 @@
                 label.style.top = labelY + 'px';
                 mapInner.appendChild(label);
 
-                // Узлы с увеличенным расстоянием между ними
-                const nodeSpacing = lastNodeDist / (axis.nodes.length + 1);
+                // Узлы (расстояние между ними меньше, т.к. nodeScale короче)
+                const nodeSpacing = nodeScale / (axis.nodes.length + 1);
                 axis.nodes.forEach((nodeData, index) => {
                     const dist = nodeSpacing * (index + 1);
                     let nodeX = cx + Math.cos(angleRad) * dist;
@@ -272,7 +273,7 @@
                     nodeX = Math.min(Math.max(nodeX, 15), w - 15);
                     nodeY = Math.min(Math.max(nodeY, 15), h - 15);
 
-                    // Линия к узлу
+                    // Тонкая линия к узлу
                     const nodeLine = document.createElement('div');
                     nodeLine.className = 'line-node';
                     const nodeLen = Math.sqrt((nodeX - cx)**2 + (nodeY - cy)**2);
