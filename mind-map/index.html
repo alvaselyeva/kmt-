@@ -30,7 +30,7 @@
             font-weight: 700;
             color: #27262a;
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
         .map {
             position: relative;
@@ -119,13 +119,13 @@
             opacity: 0.4;
         }
         .detail-panel {
-            margin-top: 15px;
-            padding: 12px;
+            margin-top: 5px;
+            padding: 8px 12px;
             background: #f9f9f9;
             border-radius: 8px;
             text-align: left;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.4;
             color: #444;
             display: block;
         }
@@ -147,13 +147,13 @@
 <body>
     <div class="container">
         <h2>Многомерная модель: Московский транспорт</h2>
+        <div class="detail-panel" id="detailPanel" style="margin-bottom: 8px;">
+            Нажмите на любой узел, чтобы увидеть пояснение.
+        </div>
         <div class="map" id="map">
             <div class="map-inner" id="mapInner">
                 <div class="center-node">Московский<br>транспорт</div>
             </div>
-        </div>
-        <div class="detail-panel" id="detailPanel">
-            Нажмите на любой узел, чтобы увидеть пояснение.
         </div>
     </div>
 
@@ -229,8 +229,8 @@
             const cx = w / 2;
             const cy = h / 2;
 
-            // Увеличиваем масштаб, чтобы узлы были свободнее
-            const scale = Math.min(w, h) * 0.45;
+            // Увеличенный масштаб — линии длиннее в 1.5 раза
+            const scale = Math.min(w, h) * 0.6;
 
             data.axes.forEach(axis => {
                 const angleRad = (axis.angle - 90) * Math.PI / 180;
@@ -250,8 +250,8 @@
                 axisLine.style.transform = `rotate(${Math.atan2(axisEndY - cy, axisEndX - cx)}rad)`;
                 mapInner.appendChild(axisLine);
 
-                // Подпись оси — отодвигаем чуть дальше последнего узла
-                const labelDist = lastNodeDist + 20;
+                // Подпись оси — размещаем точно на линии, чуть дальше последнего узла
+                const labelDist = lastNodeDist + 10;
                 let labelX = cx + Math.cos(angleRad) * labelDist;
                 let labelY = cy + Math.sin(angleRad) * labelDist;
                 labelX = Math.min(Math.max(labelX, 25), w - 25);
