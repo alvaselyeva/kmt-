@@ -24,7 +24,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             border-top: 5px solid #fc3844;
             text-align: center;
-            position: relative;
         }
         h2 {
             font-size: 24px;
@@ -36,11 +35,19 @@
         .map {
             position: relative;
             width: 100%;
-            height: 600px;
+            height: 0;
+            padding-bottom: 75%; /* пропорции 4:3 */
             margin: 0 auto;
-            overflow: hidden; /* всё, что вылезает, обрезается */
             background: #ffffff;
             border-radius: 12px;
+            overflow: hidden;
+        }
+        .map-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
         .center-node {
             position: absolute;
@@ -75,6 +82,7 @@
             max-width: 120px;
             word-wrap: break-word;
             line-height: 1.3;
+            transform: translate(-50%, -50%);
         }
         .node {
             position: absolute;
@@ -90,12 +98,12 @@
             z-index: 5;
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             white-space: nowrap;
+            transform: translate(-50%, -50%);
         }
         .node:hover {
             background: #fc3844;
             color: white;
             box-shadow: 0 4px 12px rgba(252,56,68,0.3);
-            transform: translate(-50%, -50%) translateY(-2px);
         }
         .line-axis {
             position: absolute;
@@ -143,7 +151,9 @@
     <div class="container">
         <h2>Многомерная модель: Московский транспорт</h2>
         <div class="map" id="map">
-            <div class="center-node">Московский<br>транспорт</div>
+            <div class="map-inner" id="mapInner">
+                <div class="center-node">Московский<br>транспорт</div>
+            </div>
         </div>
         <div class="detail-panel" id="detailPanel">
             Нажмите на любой узел, чтобы увидеть пояснение.
@@ -210,69 +220,73 @@
             ]
         };
 
-        const map = document.getElementById('map');
+        const mapInner = document.getElementById('mapInner');
         const detailPanel = document.getElementById('detailPanel');
-        let centerX, centerY;
 
         function drawModel() {
-            // Удаляем все старые элементы, кроме центральной ноды
-            map.querySelectorAll('.line-axis, .line-node, .axis-label, .node').forEach(el => el.remove());
+            // Удаляем все динамические элементы
+            mapInner.querySelectorAll('.line-axis, .line-node, .axis-label, .node').forEach(el => el.remove());
 
-            const mapRect = map.getBoundingClientRect();
-            const w = mapRect.width;
-            const h = mapRect.height;
-            centerX = w / 2;
-            centerY = h / 2;
+            const rect = mapInner.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            const cx = w / 2;
+            const cy = h / 2;
 
-            // Размер шкалы в пикселях (за основу берём меньшую сторону, чтобы всё влезло)
-            const scale = Math.min(w, h) * 0.42;
+            // Масштаб — 40% от меньшей стороны, чтобы всё точно поместилось
+            const scale = Math.min(w, h) * 0.40;
 
             data.axes.forEach(axis => {
                 const angleRad = (axis.angle - 90) * Math.PI / 180;
-
-                // Конец оси (линия до последнего узла)
                 const lastNodeDist = 0.75 * scale;
-                const axisEndX = centerX + Math.cos(angleRad) * lastNodeDist;
-                const axisEndY = centerY + Math.sin(angleRad) * lastNodeDist;
 
-                // Рисуем ось
+                // Конечная точка оси
+                const axisEndX = cx + Math.cos(angleRad) * lastNodeDist;
+                const axisEndY = cy + Math.sin(angleRad) * lastNodeDist;
+
+                // Рисуем ось (линия от центра до последнего узла)
                 const axisLine = document.createElement('div');
                 axisLine.className = 'line-axis';
-                const axisLength = Math.sqrt(Math.pow(axisEndX - centerX, 2) + Math.pow(axisEndY - centerY, 2));
-                axisLine.style.width = axisLength + 'px';
-                axisLine.style.left = centerX + 'px';
-                axisLine.style.top = centerY + 'px';
-                axisLine.style.transform = `rotate(${Math.atan2(axisEndY - centerY, axisEndX - centerX)}rad)`;
-                map.appendChild(axisLine);
+                const axisLen = Math.sqrt((axisEndX - cx)**2 + (axisEndY - cy)**2);
+                axisLine.style.width = axisLen + 'px';
+                axisLine.style.left = cx + 'px';
+                axisLine.style.top = cy + 'px';
+                axisLine.style.transform = `rotate(${Math.atan2(axisEndY - cy, axisEndX - cx)}rad)`;
+                mapInner.appendChild(axisLine);
 
-                // Подпись оси (чуть дальше последнего узла)
-                const labelDist = lastNodeDist + 30;
-                const labelX = centerX + Math.cos(angleRad) * labelDist;
-                const labelY = centerY + Math.sin(angleRad) * labelDist;
+                // Подпись оси (немного дальше последнего узла, но проверяем границы)
+                const labelDist = lastNodeDist + 25;
+                let labelX = cx + Math.cos(angleRad) * labelDist;
+                let labelY = cy + Math.sin(angleRad) * labelDist;
+                // Ограничиваем, чтобы не выходило за границы
+                labelX = Math.min(Math.max(labelX, 30), w - 30);
+                labelY = Math.min(Math.max(labelY, 20), h - 20);
                 const label = document.createElement('div');
                 label.className = 'axis-label';
                 label.textContent = axis.label;
                 label.style.left = labelX + 'px';
                 label.style.top = labelY + 'px';
-                label.style.transform = 'translate(-50%, -50%)';
-                map.appendChild(label);
+                mapInner.appendChild(label);
 
-                // Узлы и линии к ним
+                // Узлы
                 const nodeSpacing = lastNodeDist / (axis.nodes.length + 1);
                 axis.nodes.forEach((nodeData, index) => {
                     const dist = nodeSpacing * (index + 1);
-                    const nodeX = centerX + Math.cos(angleRad) * dist;
-                    const nodeY = centerY + Math.sin(angleRad) * dist;
+                    let nodeX = cx + Math.cos(angleRad) * dist;
+                    let nodeY = cy + Math.sin(angleRad) * dist;
+                    // Тоже слегка ограничиваем, хотя они должны быть в пределах
+                    nodeX = Math.min(Math.max(nodeX, 20), w - 20);
+                    nodeY = Math.min(Math.max(nodeY, 20), h - 20);
 
-                    // Линия от центра к узлу (тонкая)
+                    // Тонкая линия от центра к узлу
                     const nodeLine = document.createElement('div');
                     nodeLine.className = 'line-node';
-                    const nodeLength = Math.sqrt(Math.pow(nodeX - centerX, 2) + Math.pow(nodeY - centerY, 2));
-                    nodeLine.style.width = nodeLength + 'px';
-                    nodeLine.style.left = centerX + 'px';
-                    nodeLine.style.top = centerY + 'px';
-                    nodeLine.style.transform = `rotate(${Math.atan2(nodeY - centerY, nodeX - centerX)}rad)`;
-                    map.appendChild(nodeLine);
+                    const nodeLen = Math.sqrt((nodeX - cx)**2 + (nodeY - cy)**2);
+                    nodeLine.style.width = nodeLen + 'px';
+                    nodeLine.style.left = cx + 'px';
+                    nodeLine.style.top = cy + 'px';
+                    nodeLine.style.transform = `rotate(${Math.atan2(nodeY - cy, nodeX - cx)}rad)`;
+                    mapInner.appendChild(nodeLine);
 
                     // Узел
                     const node = document.createElement('div');
@@ -280,27 +294,24 @@
                     node.textContent = nodeData.label;
                     node.style.left = nodeX + 'px';
                     node.style.top = nodeY + 'px';
-                    node.style.transform = 'translate(-50%, -50%)';
                     node.addEventListener('click', (e) => {
                         e.stopPropagation();
                         detailPanel.innerHTML = `<strong>${nodeData.label}</strong><br><br>${nodeData.desc}`;
                     });
-                    map.appendChild(node);
+                    mapInner.appendChild(node);
                 });
             });
         }
 
-        // Первая отрисовка
+        // Первая отрисовка и при ресайзе
         drawModel();
-
-        // Перерисовка при изменении размера окна
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(drawModel, 100);
         });
 
-        // Клик по пустому месту сбрасывает панель
+        // Сброс подсказки при клике на пустое место
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.node')) {
                 detailPanel.innerHTML = 'Нажмите на любой узел, чтобы увидеть пояснение.';
