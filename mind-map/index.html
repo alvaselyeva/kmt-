@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Многомерная модель: Московский транспорт</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f6f6f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-top: 5px solid #fc3844;
+            text-align: center;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #27262a;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .map {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            margin: 0 auto;
+        }
+        .center-node {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fc3844;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(252,56,68,0.4);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .axis-label {
+            position: absolute;
+            font-weight: 600;
+            font-size: 14px;
+            color: #27262a;
+            background: rgba(255,255,255,0.9);
+            padding: 4px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 2;
+            border: 1px solid #ddd;
+        }
+        .node {
+            position: absolute;
+            background: white;
+            border: 2px solid #fc3844;
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #27262a;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 5;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            white-space: nowrap;
+        }
+        .node:hover {
+            background: #fc3844;
+            color: white;
+            box-shadow: 0 4px 12px rgba(252,56,68,0.3);
+            transform: translateY(-2px);
+        }
+        .line-axis {
+            position: absolute;
+            height: 2px;
+            background: #ddd;
+            transform-origin: left center;
+            z-index: 1;
+            opacity: 0.8;
+        }
+        .line-node {
+            position: absolute;
+            height: 1px;
+            background: #fc3844;
+            transform-origin: left center;
+            z-index: 1;
+            opacity: 0.4;
+        }
+        /* Панель с описанием */
+        .detail-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            text-align: left;
+            display: none;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #444;
+        }
+        .detail-panel.active {
+            display: block;
+        }
+        .detail-panel strong {
+            color: #27262a;
+        }
+        @media (max-width: 700px) {
+            .node {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            .center-node {
+                font-size: 16px;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Многомерная модель: Московский транспорт</h2>
+        <div class="map" id="map">
+            <div class="center-node">Московский<br>транспорт</div>
+            <!-- Узлы и оси будут добавлены через JS -->
+        </div>
+        <div class="detail-panel" id="detailPanel">
+            Нажмите на любой узел, чтобы увидеть пояснение.
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            center: { label: "Московский транспорт" },
+            axes: [
+                {
+                    id: "types",
+                    label: "Виды транспорта",
+                    angle: -80,
+                    nodes: [
+                        { label: "Метрополитен", desc: "Основа городского транспорта Москвы, перевозит миллионы пассажиров ежедневно." },
+                        { label: "МЦК", desc: "Московское центральное кольцо, интегрированное с метро и радиальными линиями." },
+                        { label: "МЦД", desc: "Московские центральные диаметры — сквозные пригородно-городские электрички." },
+                        { label: "Автобусы", desc: "Наземный городской транспорт, включая электробусы." }
+                    ]
+                },
+                {
+                    id: "infra",
+                    label: "Инфраструктура",
+                    angle: -30,
+                    nodes: [
+                        { label: "Пути", desc: "Рельсовые пути, контактная сеть, стрелочные переводы." },
+                        { label: "Станции", desc: "Пассажирские станции, вокзалы, остановочные пункты." },
+                        { label: "Депо", desc: "Электродепо для обслуживания и ремонта подвижного состава." },
+                        { label: "Энергетика", desc: "Тяговые подстанции, кабельные сети, освещение." }
+                    ]
+                },
+                {
+                    id: "specialists",
+                    label: "Специалисты",
+                    angle: 20,
+                    nodes: [
+                        { label: "Машинисты", desc: "Управляют поездами метро, МЦК и наземным транспортом." },
+                        { label: "Диспетчеры", desc: "Координируют движение, обеспечивают безопасность и график." },
+                        { label: "Энергетики", desc: "Обслуживают тяговые подстанции и контактную сеть." },
+                        { label: "Путейцы", desc: "Следят за состоянием путей и искусственных сооружений." }
+                    ]
+                },
+                {
+                    id: "processes",
+                    label: "Процессы",
+                    angle: 70,
+                    nodes: [
+                        { label: "Перевозки", desc: "Организация пассажирских перевозок, маршруты, расписание." },
+                        { label: "Обслуживание", desc: "Техническое обслуживание и плановый ремонт состава." },
+                        { label: "Безопасность", desc: "Контроль за соблюдением правил, видеонаблюдение, охрана." }
+                    ]
+                },
+                {
+                    id: "future",
+                    label: "Будущее",
+                    angle: 120,
+                    nodes: [
+                        { label: "Беспилотники", desc: "Разработка и внедрение беспилотных поездов." },
+                        { label: "Цифровизация", desc: "Цифровые двойники инфраструктуры, предиктивная аналитика." },
+                        { label: "Экология", desc: "Снижение выбросов, энергоэффективность, зелёные технологии." }
+                    ]
+                }
+            ]
+        };
+
+        const map = document.getElementById('map');
+        const detailPanel = document.getElementById('detailPanel');
+        const centerNode = map.querySelector('.center-node');
+
+        const centerX = 50; // в процентах
+        const centerY = 50;
+        const radiusAxis = 30; // длина оси в процентах
+        const radiusNodeStart = 38; // начало узлов
+
+        // Функция для получения координат точки на луче
+        function getPoint(cx, cy, angleDeg, distancePercent) {
+            const angleRad = (angleDeg - 90) * Math.PI / 180;
+            const dx = Math.cos(angleRad) * distancePercent;
+            const dy = Math.sin(angleRad) * distancePercent;
+            return {
+                left: cx + dx,
+                top: cy + dy
+            };
+        }
+
+        // Рисуем оси и узлы
+        data.axes.forEach(axis => {
+            // Конец оси
+            const axisEnd = getPoint(centerX, centerY, axis.angle, radiusAxis);
+            const axisLine = document.createElement('div');
+            axisLine.className = 'line-axis';
+            const axisLength = Math.sqrt((axisEnd.left - centerX)**2 + (axisEnd.top - centerY)**2);
+            axisLine.style.width = axisLength + '%';
+            axisLine.style.left = centerX + '%';
+            axisLine.style.top = centerY + '%';
+            const axisAngleRad = Math.atan2(axisEnd.top - centerY, axisEnd.left - centerX);
+            axisLine.style.transform = `rotate(${axisAngleRad}rad)`;
+            map.appendChild(axisLine);
+
+            // Подпись оси
+            const labelPoint = getPoint(centerX, centerY, axis.angle, radiusAxis + 8);
+            const label = document.createElement('div');
+            label.className = 'axis-label';
+            label.textContent = axis.label;
+            label.style.left = labelPoint.left + '%';
+            label.style.top = labelPoint.top + '%';
+            label.style.transform = 'translate(-50%, -50%)';
+            map.appendChild(label);
+
+            // Узлы
+            const nodeSpacing = (70 - radiusNodeStart) / (axis.nodes.length + 1);
+            axis.nodes.forEach((nodeData, index) => {
+                const distance = radiusNodeStart + nodeSpacing * (index + 1);
+                const nodePoint = getPoint(centerX, centerY, axis.angle, distance);
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.textContent = nodeData.label;
+                node.style.left = nodePoint.left + '%';
+                node.style.top = nodePoint.top + '%';
+                node.style.transform = 'translate(-50%, -50%)';
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    detailPanel.innerHTML = `<strong>${nodeData.label}</strong><br><br>${nodeData.desc}`;
+                    detailPanel.classList.add('active');
+                });
+                map.appendChild(node);
+
+                // Линия от оси к узлу (опционально, для красоты)
+                const nodeLine = document.createElement('div');
+                nodeLine.className = 'line-node';
+                const dx = nodePoint.left - centerX;
+                const dy = nodePoint.top - centerY;
+                const len = Math.sqrt(dx*dx + dy*dy);
+                nodeLine.style.width = len + '%';
+                nodeLine.style.left = centerX + '%';
+                nodeLine.style.top = centerY + '%';
+                const angleRad = Math.atan2(dy, dx);
+                nodeLine.style.transform = `rotate(${angleRad}rad)`;
+                map.appendChild(nodeLine);
+            });
+        });
+
+        // Закрытие панели при клике на пустое место
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.node')) {
+                detailPanel.innerHTML = 'Нажмите на любой узел, чтобы увидеть пояснение.';
+            }
+        });
+    </script>
+</body>
+</html>
